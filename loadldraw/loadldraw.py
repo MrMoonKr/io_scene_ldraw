@@ -50,53 +50,53 @@ import tempfile
 from pprint import pprint
 
 # **************************************************************************************
-def linkToScene(ob):
-    if bpy.context.collection.objects.find(ob.name) < 0:
-        bpy.context.collection.objects.link(ob)
+def linkToScene( ob: bpy.types.Object ):
+    if bpy.context.collection.objects.find( ob.name ) < 0:
+        bpy.context.collection.objects.link( ob )
 
 # **************************************************************************************
-def linkToCollection(collectionName, ob):
+def linkToCollection( collectionName: str, ob: bpy.types.Object ):
     # Add object to the appropriate collection
     if hasCollections:
-        if bpy.data.collections[collectionName].objects.find(ob.name) < 0:
-            bpy.data.collections[collectionName].objects.link(ob)
+        if bpy.data.collections[collectionName].objects.find( ob.name ) < 0:
+            bpy.data.collections[collectionName].objects.link( ob )
     else:
-        bpy.data.groups[collectionName].objects.link(ob)
+        bpy.data.groups[collectionName].objects.link( ob )
 
 # **************************************************************************************
-def unlinkFromScene(ob):
+def unlinkFromScene( ob: bpy.types.Object ):
     if bpy.context.collection.objects.find(ob.name) >= 0:
         bpy.context.collection.objects.unlink(ob)
 
 # **************************************************************************************
-def selectObject(ob):
-    ob.select_set(state=True)
+def selectObject( ob: bpy.types.Object ):
+    ob.select_set( state=True )
     bpy.context.view_layer.objects.active = ob
 
 # **************************************************************************************
-def deselectObject(ob):
-    ob.select_set(state=False)
+def deselectObject( ob : bpy.types.Object ):
+    ob.select_set( state=False )
     bpy.context.view_layer.objects.active = None
 
 # **************************************************************************************
-def addPlane(location, size):
-    bpy.ops.mesh.primitive_plane_add(size=size, enter_editmode=False, location=location)
+def addPlane( location, size ):
+    bpy.ops.mesh.primitive_plane_add( size=size, enter_editmode=False, location=location )
 
 # **************************************************************************************
-def useDenoising(scene, useDenoising):
-    if hasattr(getLayers(scene)[0], "cycles"):
+def useDenoising( scene, useDenoising ):
+    if hasattr( getLayers(scene)[0], "cycles"):
         getLayers(scene)[0].cycles.use_denoising = useDenoising
 
 # **************************************************************************************
-def getLayerNames(scene):
-    return list(map((lambda x: x.name), getLayers(scene)))
+def getLayerNames( scene: bpy.types.Scene ):
+    return list( map( ( lambda x: x.name ), getLayers( scene ) ) )
 
 # **************************************************************************************
-def deleteEdge(bm, edge):
-    bmesh.ops.delete(bm, geom=edge, context='EDGES')
+def deleteEdge( bm: bmesh.types.BMesh, edge: bmesh.types.BMEdge ):
+    bmesh.ops.delete( bm, geom=edge, context='EDGES')
 
 # **************************************************************************************
-def getLayers(scene):
+def getLayers( scene: bpy.types.Scene ):
     # Get the render/view layers we are interested in:
     return scene.view_layers
 
@@ -105,11 +105,11 @@ def getDiffuseColor(color):
     return color + (1.0,)
 
 # **************************************************************************************
-def ShowMessageBox(message = "", title = "Message Box", icon = 'INFO'):
-    def draw(self, context):
-        self.layout.label(text=message)
+def ShowMessageBox( message = "", title = "Message Box", icon = 'INFO' ):
+    def draw( self, context ):
+        self.layout.label( text=message )
 
-    bpy.context.window_manager.popup_menu(draw, title = title, icon = icon)
+    bpy.context.window_manager.popup_menu( draw, title = title, icon = icon )
 
 
 # **************************************************************************************
@@ -200,16 +200,16 @@ class Options:
 
 # **************************************************************************************
 # Globals
-globalBrickCount = 0
-globalObjectsToAdd = []         # Blender objects to add to the scene
-globalCamerasToAdd = []         # Camera data to add to the scene
-globalContext = None
-globalPoints = []
-globalScaleFactor = 0.0004
-globalWeldDistance = 0.0005
+globalBrickCount        = 0
+globalObjectsToAdd      = []         # Blender objects to add to the scene
+globalCamerasToAdd      = []         # Camera data to add to the scene
+globalContext           = None
+globalPoints            = []
+globalScaleFactor       = 0.0004
+globalWeldDistance      = 0.0005
 
-hasCollections = None
-lightName = "Light"
+hasCollections          = None
+lightName               = "Light"
 
 # **************************************************************************************
 # Dictionary with as keys the part numbers (without any extension for decorations)
@@ -321,13 +321,13 @@ for part, angles in globalSlopeBricks.items():
     globalSlopeAngles[part] = {(c-margin, c+margin) if type(c) is not tuple else (min(c)-margin,max(c)+margin) for c in angles}
 
 # **************************************************************************************
-def internalPrint(message):
+def internalPrint( message ):
     """Debug print with identification timestamp."""
 
     # Current timestamp (with milliseconds trimmed to two places)
-    timestamp = datetime.datetime.now().strftime("%H:%M:%S.%f")[:-4]
+    timestamp = datetime.datetime.now().strftime( "%H:%M:%S.%f" )[:-4]
 
-    message = "{0} [importldraw] {1}".format(timestamp, message)
+    message = "{0} [importldraw] {1}".format( timestamp, message )
     print("{0}".format(message))
 
     global globalContext
@@ -335,14 +335,14 @@ def internalPrint(message):
         globalContext.report({'INFO'}, message)
 
 # **************************************************************************************
-def debugPrint(message):
+def debugPrint( message ):
     """Debug print with identification timestamp."""
 
     if Options.verbose > 0:
-        internalPrint(message)
+        internalPrint( message )
 
 # **************************************************************************************
-def printWarningOnce(key, message=None):
+def printWarningOnce( key, message=None ):
     if message is None:
         message = key
 
@@ -355,7 +355,7 @@ def printWarningOnce(key, message=None):
             globalContext.report({'WARNING'}, message)
 
 # **************************************************************************************
-def printError(message):
+def printError( message ):
     internalPrint("ERROR: {0}".format(message))
 
     global globalContext
@@ -1389,9 +1389,11 @@ class LDrawCamera:
 # **************************************************************************************
 # **************************************************************************************
 class LDrawFile:
-    """Stores the contents of a single LDraw file.
-    Specifically this represents an IO, LDR, L3B, DAT or one '0 FILE' section of an MPD.
-    Splits up an MPD file into '0 FILE' sections and caches them."""
+    """
+        Stores the contents of a single LDraw file.
+        Specifically this represents an IO, LDR, L3B, DAT or one '0 FILE' section of an MPD.
+        Splits up an MPD file into '0 FILE' sections and caches them.
+        """
 
     def __loadLegoFile(self, filepath, isFullFilepath, parentFilepath):
         # Resolve full filepath if necessary
@@ -1542,30 +1544,30 @@ class LDrawFile:
 
         return name in ("logo3.dat", "logo4.dat", "logo5.dat", "logotente.dat")
 
-    def __init__(self, filename, isFullFilepath, parentFilepath, lines = None, isSubPart=False):
+    def __init__( self, filename, isFullFilepath, parentFilepath, lines = None, isSubPart=False ):
         """Loads an LDraw file (IO, LDR, L3B, DAT or MPD)"""
 
         global globalCamerasToAdd
         global globalScaleFactor
 
-        self.filename         = filename
-        self.lines            = lines
-        self.isPart           = False
-        self.isSubPart        = isSubPart
-        self.isStud           = LDrawFile.__isStud(filename)
-        self.isStudLogo       = LDrawFile.__isStudLogo(filename)
-        self.isLSynthPart     = False
-        self.isDoubleSided    = False
-        self.geometry         = LDrawGeometry()
-        self.childNodes       = []
-        self.bfcCertified     = None
-        self.isModel          = False
+        self.filename           = filename
+        self.lines              = lines
+        self.isPart             = False
+        self.isSubPart          = isSubPart
+        self.isStud             = LDrawFile.__isStud( filename )
+        self.isStudLogo         = LDrawFile.__isStudLogo( filename )
+        self.isLSynthPart       = False
+        self.isDoubleSided      = False
+        self.geometry           = LDrawGeometry()
+        self.childNodes         = []
+        self.bfcCertified       = None
+        self.isModel            = False
 
-        isGrainySlopeAllowed = not self.isStud
+        isGrainySlopeAllowed    = not self.isStud
 
         if self.lines is None:
             # Load the file into self.lines
-            if not self.__loadLegoFile(self.filename, isFullFilepath, parentFilepath):
+            if not self.__loadLegoFile( self.filename, isFullFilepath, parentFilepath ):
                 return
         else:
             # We are loading a section of our parent document, so full filepath is that of the parent
@@ -1573,13 +1575,13 @@ class LDrawFile:
 
         # BFC = Back face culling. The rules are arcane and complex, but at least
         #       it's kind of documented: http://www.ldraw.org/article/415.html
-        bfcLocalCull          = True
-        bfcWindingCCW         = True
-        bfcInvertNext         = False
-        processingLSynthParts = False
-        camera = LDrawCamera()
+        bfcLocalCull            = True
+        bfcWindingCCW           = True
+        bfcInvertNext           = False
+        processingLSynthParts   = False
+        camera                  = LDrawCamera()
 
-        currentGroupNames = []
+        currentGroupNames       = []
 
         #debugPrint("Processing file {0}, isSubPart = {1}, found {2} lines".format(self.filename, self.isSubPart, len(self.lines)))
 
@@ -1587,15 +1589,15 @@ class LDrawFile:
             parameters = line.strip().split()
 
             # Skip empty lines
-            if len(parameters) == 0:
+            if len( parameters ) == 0:
                 continue
 
             # Pad with empty values to simplify parsing code
-            while len(parameters) < 9:
+            while len( parameters ) < 9:
                 parameters.append("")
 
             # Parse LDraw comments (some of which have special significance)
-            if parameters[0] == "0":
+            if parameters[0] == "0": # comment line
                 if parameters[1] == "!LDRAW_ORG":
                     partType = parameters[2].lower()
                     if 'part' in partType:
@@ -1687,11 +1689,11 @@ class LDrawFile:
 
                 # Parse a File reference
                 if parameters[0] == "1":
-                    (x, y, z, a, b, c, d, e, f, g, h, i) = map(float, parameters[2:14])
-                    (x, y, z) = Math.scaleMatrix @ mathutils.Vector((x, y, z))
+                    (x, y, z, a, b, c, d, e, f, g, h, i) = map( float, parameters[2:14] )
+                    (x, y, z) = Math.scaleMatrix @ mathutils.Vector( ( x, y, z ) )
                     localMatrix = mathutils.Matrix( ((a, b, c, x), (d, e, f, y), (g, h, i, z), (0, 0, 0, 1)) )
 
-                    new_filename = " ".join(parameters[14:])
+                    new_filename = " ".join( parameters[14:] )
                     new_colourName = parameters[1]
 
                     det = localMatrix.determinant()

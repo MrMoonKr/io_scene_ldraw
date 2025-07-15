@@ -26,7 +26,7 @@ bl_info = {
     "description": "Import LDraw models in .io .mpd .ldr .l3b and .dat formats",
     "author": "Toby Nelson <tobymnelson@gmail.com>",
     "version": (1, 2,  1),
-    "blender": (2, 81, 0),
+    "blender": (4, 4, 0),
     "location": "File > Import",
     "warning": "",
     "wiki_url": "https://github.com/TobyLobster/ImportLDraw",

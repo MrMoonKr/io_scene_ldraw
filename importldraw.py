@@ -67,7 +67,7 @@ class Preferences():
     """Import LDraw - Preferences"""
     __sectionName   = 'importldraw'
 
-    def __init__(self):
+    def __init__( self ):
         self.__ldPath        = None
         self.__prefsPath     = os.path.dirname(__file__)
         self.__prefsFilepath = os.path.join(self.__prefsPath, "ImportLDrawPreferences.ini")
@@ -106,39 +106,41 @@ class Preferences():
             return False
 
 
-class ImportLDrawOps(bpy.types.Operator, ImportHelper):
-    """Import LDraw - Import Operator."""
+class ImportLDrawOps( bpy.types.Operator, ImportHelper ):
+    """
+        Import LDraw - Import Operator.
+        """
 
-    bl_idname       = "import_scene.importldraw"
-    bl_description  = "Import LDraw models (.io/.mpd/.ldr/.l3b/.dat)"
-    bl_label        = "Import LDraw Models"
-    bl_space_type   = "PROPERTIES"
-    bl_region_type  = "WINDOW"
-    bl_options      = {'REGISTER', 'UNDO', 'PRESET'}
+    bl_idname           = "import_scene.importldraw"
+    bl_description      = "Import LDraw models (.io/.mpd/.ldr/.l3b/.dat)"
+    bl_label            = "Import LDraw Models"
+    bl_space_type       = "PROPERTIES"
+    bl_region_type      = "WINDOW"
+    bl_options          = {'REGISTER', 'UNDO', 'PRESET'}
 
     # Instance the preferences system
-    prefs = Preferences()
+    prefs               = Preferences()
 
     # File type filter in file browser
-    filename_ext = ".ldr"
-    filter_glob: StringProperty(
+    filename_ext        = ".ldr"
+    filter_glob         = StringProperty(
         default="*.io;*.mpd;*.ldr;*.l3b;*.dat",
         options={'HIDDEN'}
     )
 
-    ldrawPath: StringProperty(
+    ldrawPath           = StringProperty(
         name="",
         description="Full filepath to the LDraw Parts Library (download from http://www.ldraw.org)",
         default=prefs.get("ldrawDirectory", loadldraw.Configure.findDefaultLDrawDirectory())
     )
 
-    realScale: FloatProperty(
+    realScale           = FloatProperty(
         name="Scale",
         description="Sets a scale for the model (1.0 = real life scale)",
         default=prefs.get("realScale", 1.0)
     )
 
-    resPrims: EnumProperty(
+    resPrims            = EnumProperty(
         name="Resolution of part primitives",
         description="Resolution of part primitives, ie. how much geometry they have",
         default=prefs.get("resolution", "Standard"),
@@ -149,13 +151,13 @@ class ImportLDrawOps(bpy.types.Operator, ImportHelper):
         )
     )
 
-    smoothParts: BoolProperty(
+    smoothParts         = BoolProperty(
         name="Smooth faces and edge-split",
         description="Smooth faces and add an edge-split modifier",
         default=prefs.get("smoothShading", True)
     )
 
-    look: EnumProperty(
+    look                = EnumProperty(
         name="Overall Look",
         description="Realism or Schematic look",
         default=prefs.get("useLook", "normal"),
@@ -165,7 +167,7 @@ class ImportLDrawOps(bpy.types.Operator, ImportHelper):
         )
     )
 
-    colourScheme: EnumProperty(
+    colourScheme        = EnumProperty(
         name="Colour scheme options",
         description="Colour scheme options",
         default=prefs.get("useColurScheme", "lgeo"),
@@ -176,79 +178,79 @@ class ImportLDrawOps(bpy.types.Operator, ImportHelper):
         )
     )
 
-    addGaps: BoolProperty(
+    addGaps             = BoolProperty(
         name="Add space between each part:",
         description="Add a small space between each part",
         default=prefs.get("gaps", False)
     )
 
-    gapWidthMM: FloatProperty(
+    gapWidthMM          = FloatProperty(
         name="Space",
         description="Amount of space between each part (default 0.2mm)",
         default=1000 * prefs.get("realGapWidth", 0.0002)
     )
 
-    curvedWalls: BoolProperty(
+    curvedWalls         = BoolProperty(
         name="Use curved wall normals",
         description="Makes surfaces look slightly concave, for interesting reflections",
         default=prefs.get("curvedWalls", True)
     )
 
-    importCameras: BoolProperty(
+    importCameras       = BoolProperty(
         name="Import cameras",
         description="Import camera definitions (from models authored in LeoCAD)",
         default=prefs.get("importCameras", True)
     )
 
-    linkParts: BoolProperty(
+    linkParts           = BoolProperty(
         name="Link identical parts",
         description="Identical parts (of the same type and colour) share the same mesh",
         default=prefs.get("linkParts", True)
     )
 
-    numberNodes: BoolProperty(
+    numberNodes         = BoolProperty(
         name="Number each object",
         description="Each object has a five digit prefix eg. 00001_car. This keeps the list in it's proper order",
         default=prefs.get("numberNodes", True)
     )
 
-    positionOnGround: BoolProperty(
+    positionOnGround    = BoolProperty(
         name="Put model on ground at origin",
         description="The object is centred at the origin, and on the ground plane",
         default=prefs.get("positionObjectOnGroundAtOrigin", True)
     )
 
-    flatten: BoolProperty(
+    flatten             = BoolProperty(
         name="Flatten tree",
         description="In Scene Outliner, all parts are placed directly below the root - there's no tree of submodels",
         default=prefs.get("flattenHierarchy", False)
     )
 
-    minifigHierarchy: BoolProperty(
+    minifigHierarchy    = BoolProperty(
         name="Parent Minifigs",
         description="Add a parent/child hierarchy (tree) for Minifigs",
         default=prefs.get("minifigHierarchy", True)
     )
 
-    useUnofficialParts: BoolProperty(
+    useUnofficialParts  = BoolProperty(
         name="Include unofficial parts",
         description="Additionally searches for parts in the <ldraw-dir>/unofficial/ directory",
         default=prefs.get("useUnofficialParts", True)
     )
 
-    useLogoStuds: BoolProperty(
+    useLogoStuds        = BoolProperty(
         name="Show 'LEGO' logo on studs",
         description="Shows the LEGO logo on each stud (at the expense of some extra geometry and import time)",
         default=prefs.get("useLogoStuds", False)
     )
 
-    instanceStuds: BoolProperty(
+    instanceStuds       = BoolProperty(
         name="Make individual studs",
         description="Creates a Blender Object for each and every stud (WARNING: can be slow to import and edit in Blender if there are lots of studs)",
         default=prefs.get("instanceStuds", False)
     )
 
-    resolveNormals: EnumProperty(
+    resolveNormals      = EnumProperty(
         name="Resolve ambiguous normals option",
         description="Some older LDraw parts have faces with ambiguous normals, this specifies what do do with them",
         default=prefs.get("resolveNormals", "guess"),
@@ -258,107 +260,107 @@ class ImportLDrawOps(bpy.types.Operator, ImportHelper):
         )
     )
 
-    bevelEdges: BoolProperty(
+    bevelEdges          = BoolProperty(
         name="Bevel edges",
         description="Adds a Bevel modifier for rounding off sharp edges",
         default=prefs.get("bevelEdges", True)
     )
 
-    bevelWidth: FloatProperty(
+    bevelWidth          = FloatProperty(
         name="Bevel Width",
         description="Width of the bevelled edges",
         default=prefs.get("bevelWidth", 0.5)
     )
 
-    addEnvironment: BoolProperty(
+    addEnvironment      = BoolProperty(
         name="Add Environment",
         description="Adds a ground plane and environment texture (for realistic look only)",
         default=prefs.get("addEnvironment", True)
     )
 
-    positionCamera: BoolProperty(
+    positionCamera      = BoolProperty(
         name="Position the camera",
         description="Position the camera to show the whole model",
         default=prefs.get("positionCamera", True)
     )
 
-    cameraBorderPercentage: FloatProperty(
+    cameraBorderPercentage = FloatProperty(
         name="Camera Border %",
         description="When positioning the camera, include a (percentage) border leeway around the model in the rendered image",
         default=prefs.get("cameraBorderPercentage", 5.0)
     )
 
-    def draw(self, context):
+    def draw( self, context ):
         """Display import options."""
 
-        layout = self.layout
+        layout          = self.layout
         layout.use_property_split = True # Active single-column layout
 
-        box = layout.box()
-        box.label(text="Import Options", icon='PREFERENCES')
-        box.label(text="LDraw filepath:", icon='FILEBROWSER')
-        box.prop(self, "ldrawPath")
-        box.prop(self, "realScale")
-        box.prop(self, "look", expand=True)
-        box.prop(self, "addEnvironment")
-        box.prop(self, "positionCamera")
-        box.prop(self, "cameraBorderPercentage")
+        box             = layout.box()
+        box.label( text="Import Options", icon='PREFERENCES' )
+        box.label( text="LDraw filepath:", icon='FILEBROWSER' )
+        box.prop( self, "ldrawPath" )
+        box.prop( self, "realScale" )
+        box.prop( self, "look", expand=True )
+        box.prop( self, "addEnvironment" )
+        box.prop( self, "positionCamera" )
+        box.prop( self, "cameraBorderPercentage" )
 
-        box.prop(self, "colourScheme", expand=True)
-        box.prop(self, "resPrims", expand=True)
-        box.prop(self, "smoothParts")
-        box.prop(self, "bevelEdges")
-        box.prop(self, "bevelWidth")
-        box.prop(self, "addGaps")
-        box.prop(self, "gapWidthMM")
-        box.prop(self, "curvedWalls")
-        box.prop(self, "importCameras")
-        box.prop(self, "linkParts")
-        box.prop(self, "useUnofficialParts")
+        box.prop( self, "colourScheme", expand=True )
+        box.prop( self, "resPrims", expand=True )
+        box.prop( self, "smoothParts" )
+        box.prop( self, "bevelEdges" )
+        box.prop( self, "bevelWidth" )
+        box.prop( self, "addGaps" )
+        box.prop( self, "gapWidthMM" )
+        box.prop( self, "curvedWalls" )
+        box.prop( self, "importCameras" )
+        box.prop( self, "linkParts" )
+        box.prop( self, "useUnofficialParts" )
 
-        box.prop(self, "useLogoStuds")
-        box.prop(self, "instanceStuds")
+        box.prop( self, "useLogoStuds" )
+        box.prop( self, "instanceStuds" )
 
-        box.prop(self, "positionOnGround")
-        box.prop(self, "numberNodes")
-        box.prop(self, "flatten")
-        box.prop(self, "minifigHierarchy")
+        box.prop( self, "positionOnGround" )
+        box.prop( self, "numberNodes" )
+        box.prop( self, "flatten" )
+        box.prop( self, "minifigHierarchy" )
 
-        box.label(text="Resolve Ambiguous Normals:", icon='ORIENTATION_NORMAL')
-        box.prop(self, "resolveNormals", expand=True)
+        box.label( text="Resolve Ambiguous Normals:", icon='ORIENTATION_NORMAL' )
+        box.prop( self, "resolveNormals", expand=True )
 
-    def execute(self, context):
+    def execute( self, context ):
         """Start the import process."""
 
         # Read current preferences from the UI and save them
-        ImportLDrawOps.prefs.set("ldrawDirectory",        self.ldrawPath)
-        ImportLDrawOps.prefs.set("realScale",             self.realScale)
-        ImportLDrawOps.prefs.set("resolution",            self.resPrims)
-        ImportLDrawOps.prefs.set("smoothShading",         self.smoothParts)
-        ImportLDrawOps.prefs.set("bevelEdges",            self.bevelEdges)
-        ImportLDrawOps.prefs.set("bevelWidth",            self.bevelWidth)
-        ImportLDrawOps.prefs.set("useLook",               self.look)
-        ImportLDrawOps.prefs.set("useColourScheme",       self.colourScheme)
-        ImportLDrawOps.prefs.set("gaps",                  self.addGaps)
-        ImportLDrawOps.prefs.set("realGapWidth",          self.gapWidthMM / 1000)
-        ImportLDrawOps.prefs.set("curvedWalls",           self.curvedWalls)
-        ImportLDrawOps.prefs.set("importCameras",         self.importCameras)
-        ImportLDrawOps.prefs.set("linkParts",             self.linkParts)
-        ImportLDrawOps.prefs.set("numberNodes",           self.numberNodes)
-        ImportLDrawOps.prefs.set("positionObjectOnGroundAtOrigin", self.positionOnGround)
-        ImportLDrawOps.prefs.set("flattenHierarchy",      self.flatten)
-        ImportLDrawOps.prefs.set("minifigHierarchy",      self.minifigHierarchy)
-        ImportLDrawOps.prefs.set("useUnofficialParts",    self.useUnofficialParts)
-        ImportLDrawOps.prefs.set("useLogoStuds",          self.useLogoStuds)
-        ImportLDrawOps.prefs.set("instanceStuds",         self.instanceStuds)
-        ImportLDrawOps.prefs.set("resolveNormals",        self.resolveNormals)
-        ImportLDrawOps.prefs.set("addEnvironment",        self.addEnvironment)
-        ImportLDrawOps.prefs.set("positionCamera",        self.positionCamera)
-        ImportLDrawOps.prefs.set("cameraBorderPercentage",self.cameraBorderPercentage)
+        ImportLDrawOps.prefs.set( "ldrawDirectory",        self.ldrawPath )
+        ImportLDrawOps.prefs.set( "realScale",             self.realScale )
+        ImportLDrawOps.prefs.set( "resolution",            self.resPrims )
+        ImportLDrawOps.prefs.set( "smoothShading",         self.smoothParts )
+        ImportLDrawOps.prefs.set( "bevelEdges",            self.bevelEdges )
+        ImportLDrawOps.prefs.set( "bevelWidth",            self.bevelWidth )
+        ImportLDrawOps.prefs.set( "useLook",               self.look )
+        ImportLDrawOps.prefs.set( "useColourScheme",       self.colourScheme )
+        ImportLDrawOps.prefs.set( "gaps",                  self.addGaps )
+        ImportLDrawOps.prefs.set( "realGapWidth",          self.gapWidthMM / 1000 )
+        ImportLDrawOps.prefs.set( "curvedWalls",           self.curvedWalls )
+        ImportLDrawOps.prefs.set( "importCameras",         self.importCameras )
+        ImportLDrawOps.prefs.set( "linkParts",             self.linkParts )
+        ImportLDrawOps.prefs.set( "numberNodes",           self.numberNodes )
+        ImportLDrawOps.prefs.set( "positionObjectOnGroundAtOrigin", self.positionOnGround )
+        ImportLDrawOps.prefs.set( "flattenHierarchy",      self.flatten )
+        ImportLDrawOps.prefs.set( "minifigHierarchy",      self.minifigHierarchy )
+        ImportLDrawOps.prefs.set( "useUnofficialParts",    self.useUnofficialParts )
+        ImportLDrawOps.prefs.set( "useLogoStuds",          self.useLogoStuds )
+        ImportLDrawOps.prefs.set( "instanceStuds",         self.instanceStuds )
+        ImportLDrawOps.prefs.set( "resolveNormals",        self.resolveNormals )
+        ImportLDrawOps.prefs.set( "addEnvironment",        self.addEnvironment )
+        ImportLDrawOps.prefs.set( "positionCamera",        self.positionCamera )
+        ImportLDrawOps.prefs.set( "cameraBorderPercentage",self.cameraBorderPercentage )
         ImportLDrawOps.prefs.save()
 
         # Set bpy related variables here since it isn't available immediately on Blender startup
-        loadldraw.hasCollections = hasattr(bpy.data, "collections")
+        loadldraw.hasCollections = hasattr( bpy.data, "collections" )
 
         # Set import options and import
         loadldraw.Options.ldrawDirectory             = self.ldrawPath
@@ -396,5 +398,5 @@ class ImportLDrawOps(bpy.types.Operator, ImportHelper):
         loadldraw.Options.positionCamera             = self.positionCamera
         loadldraw.Options.cameraBorderPercent        = self.cameraBorderPercentage / 100.0
 
-        loadldraw.loadFromFile(self, self.filepath)
+        loadldraw.loadFromFile( self, self.filepath )
         return {'FINISHED'}
